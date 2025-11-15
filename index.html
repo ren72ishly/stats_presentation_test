@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Generated on 2025-11-15 Sat 13:58 -->
+<meta charset="utf-8"/>
+<title>Statistics</title>
+<meta name="author" content="ren"/>
+<style type="text/css">
+.underline { text-decoration: underline; }
+</style>
+<link rel="stylesheet" href="file:///Users/rn/.emacs.d/.local/straight/build-30.2/revealjs/dist/reveal.css"/>
+
+<link rel="stylesheet" href="file:///Users/rn/.emacs.d/.local/straight/build-30.2/revealjs/dist/theme/black.css" id="theme"/>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section id="sec-title-slide">
+<h1 class="title">Statistics</h1><h2 class="author">ren</h2><p class="date">Created: 2025-11-15 Sat 13:58</p>
+</section>
+<section id="table-of-contents-section">
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#/slide-1">1. Setup and Testing</a>
+<ul>
+<li><a href="#/slide-1-1">1.1. Importing Libraries</a></li>
+<li><a href="#/slide-1-2">1.2. Data Creation</a>
+<ul>
+<li><a href="#/slide-1-2-1">1.2.1. Random Creation</a></li>
+<li><a href="#/slide-1-2-2">1.2.2. Linear Pattern</a></li>
+</ul>
+</li>
+<li><a href="#/slide-1-3">1.3. Graphing Points</a></li>
+<li><a href="#/slide-1-4">1.4. Conversion to Coordinate Tuple (x,y)</a></li>
+</ul>
+</li>
+<li><a href="#/slide-2">2. Linear Regression</a>
+<ul>
+<li><a href="#/slide-2-1">2.1. Graphing Linear Models</a></li>
+<li><a href="#/slide-2-2">2.2. Residuals of the Linear Model</a></li>
+<li><a href="#/slide-2-3">2.3. Table of Residuals</a></li>
+<li><a href="#/slide-2-4">2.4. Residual Bargraph</a></li>
+<li><a href="#/slide-2-5">2.5. Residual KDE (Kernel Density Estimation) Plot</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</section>
+<section>
+<section id="slide-1">
+<h2 id="1"><span class="section-number-2">1.</span> Setup and Testing</h2>
+<div class="outline-text-2" id="text-1">
+</div>
+</section>
+<section id="slide-1-1">
+<h3 id="1-1"><span class="section-number-3">1.1.</span> Importing Libraries</h3>
+<div class="org-src-container">
+
+<pre class="src src-jupyter-python"><span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
+<span style="color: #51afef;">import</span> seaborn <span style="color: #51afef;">as</span> sns
+<span style="color: #51afef;">import</span> scipy <span style="color: #51afef;">as</span> sp
+<span style="color: #51afef;">import</span> pandas <span style="color: #51afef;">as</span> pd
+<span style="color: #51afef;">import</span> random <span style="color: #51afef;">as</span> rand
+</pre>
+</div>
+</section>
+<section id="slide-1-2">
+<h3 id="1-2"><span class="section-number-3">1.2.</span> Data Creation</h3>
+<div class="outline-text-3" id="text-1-2">
+</div>
+</section>
+<section id="slide-1-2-1">
+<h4 id="1-2-1"><span class="section-number-4">1.2.1.</span> Random Creation</h4>
+<div class="org-src-container">
+
+<pre class="src src-jupyter-python"><span style="color: #dcaeea;">num_of_data</span> = 100
+<span style="color: #dcaeea;">mini</span> = -5
+<span style="color: #dcaeea;">maxi</span> = 5
+<span style="color: #dcaeea;">x_i</span> = []
+<span style="color: #dcaeea;">y_i</span> = []
+<span style="color: #dcaeea;">range_find</span> = []
+
+<span style="color: #51afef;">for</span> i <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(num_of_data):         <span style="color: #5B6268;"># </span><span style="color: #5B6268;">range(x,y) takes x and y, where x is 0 by default. It creates iterationable lists between x (included) and y (NOT included)
+</span>    range_find.append(i)
+    x_i.append(rand.uniform(mini,maxi)) <span style="color: #5B6268;"># </span><span style="color: #5B6268;">instead of rand.int which only generates whole numbers. This makes floats as well.
+</span>    y_i.append(rand.uniform(mini,maxi))
+
+<span style="color: #5B6268;">#</span><span style="color: #5B6268;">print(range_find)
+</span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">print(x_i)
+</span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">print(y_i)</span>
+</pre>
+</div>
+</section>
+<section id="slide-1-2-2">
+<h4 id="1-2-2"><span class="section-number-4">1.2.2.</span> Linear Pattern</h4>
+<div class="org-src-container">
+
+<pre class="src src-jupyter-python"><span style="color: #dcaeea;">num_of_data</span> = 100
+<span style="color: #dcaeea;">min_error</span>, <span style="color: #dcaeea;">max_error</span> = -5, 5
+<span style="color: #dcaeea;">x_i</span>, <span style="color: #dcaeea;">y_i</span> = [], []
+<span style="color: #dcaeea;">min_max_x</span> = (-5, 5)
+<span style="color: #dcaeea;">slope</span>, <span style="color: #dcaeea;">intercept</span> = 2,0
+
+<span style="color: #51afef;">for</span> i <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(num_of_data):         <span style="color: #5B6268;"># </span><span style="color: #5B6268;">range(x,y) takes x and y, where x is 0 by default. It creates iterationable lists between x (included) and y (NOT included)
+</span>    <span style="color: #dcaeea;">function_x</span> = rand.uniform(min_max_x[0],min_max_x[1])
+    <span style="color: #dcaeea;">function_y</span> = slope * function_x + intercept
+    x_i.append(function_x) <span style="color: #5B6268;"># </span><span style="color: #5B6268;">instead of rand.int which only generates whole numbers. This makes floats as well.
+</span>    y_i.append(function_y + rand.uniform(min_error, max_error))
+
+<span style="color: #5B6268;">#</span><span style="color: #5B6268;">print(range_find)
+</span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">print(x_i)
+</span><span style="color: #5B6268;">#</span><span style="color: #5B6268;">print(y_i)</span>
+</pre>
+</div>
+</section>
+<section id="slide-1-3">
+<h3 id="1-3"><span class="section-number-3">1.3.</span> Graphing Points</h3>
+<div class="org-src-container">
+
+<pre class="src src-jupyter-python">plt.figure(figsize=(10,6))
+plt.scatter(x_i, y_i)
+plt.show()
+
+</pre>
+</div>
+
+
+<div id="orgc8a1388" class="figure">
+<p><img src="./.ob-jupyter/8a985f68a5a198821834e15139e6f584d91567fc.png" alt="8a985f68a5a198821834e15139e6f584d91567fc.png" />
+</p>
+</div>
+</section>
+<section id="slide-1-4">
+<h3 id="1-4"><span class="section-number-3">1.4.</span> Conversion to Coordinate Tuple (x,y)</h3>
+<div class="org-src-container">
+
+<pre class="src src-jupyter-python"><span style="color: #dcaeea;">coordinate_list</span> = [] <span style="color: #5B6268;">## </span><span style="color: #5B6268;">these will be a list of tuples.
+</span>
+<span style="color: #51afef;">for</span> i <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(<span style="color: #c678dd;">len</span>(x_i)):
+    coordinate_list.append((x_i[i], y_i[i]))
+
+<span style="color: #c678dd;">print</span>(coordinate_list)
+</pre>
+</div>
+
+<pre class="example">
+[(-0.6868905574122337, 2.158056675303772), (2.984902333817711, 2.4261850742692053), (0.019201054435015408, -3.34408369920126), (3.130277212029826, 8.464037886115001), (-1.2504445529761643, -5.757153494170853), (3.606481527163071, 6.315885029521058), (-1.60192591463126, 0.7094691737919732), (-3.136959304047778, -1.7421470556692213), (3.400191378818402, 11.75665044878453), (-1.859578297003479, -5.437070535563354), (4.411336749950461, 7.9295829185077), (-2.271982215494516, -2.5741147153547512), (-4.979734345982846, -6.405491430878373), (-1.7524237154178501, -1.5907122678148644), (-2.3534371830957657, -4.357991660062424), (1.5416612522481765, 5.3929006003379785), (-0.03777731223429637, -1.5585368538265802), (-1.8822076293106829, -3.005579140517253), (4.662396955286258, 9.479027528451144), (-4.735302968583374, -10.933757696331265), (-4.014924238073808, -8.966232717706896), (-4.442687420294485, -13.003739112312012), (-4.377191359928949, -4.762435740509659), (3.3937324831458486, 4.432544887342648), (-4.529802036571773, -12.664758736531367), (3.0306500542339947, 5.7415986098539875), (4.454147687395771, 5.891590420473231), (-3.0303530626055197, -6.710327558461554), (4.026149052084435, 11.60428890044909), (0.633005279214526, 4.68025448508085), (3.488122344400077, 8.679904846666467), (-1.2346031606838381, 2.1764981241315935), (-2.951656313641995, -4.726858951647506), (3.440001677763256, 2.5397208222293477), (-4.210400994164983, -3.5004199408304046), (3.3275323838379176, 9.473631008328432), (0.2556126899549147, 4.772923983893541), (-4.693507880006829, -12.094738546626463), (0.453418957611623, -2.1504353122724336), (2.5469827983115128, 1.669708754903798), (-2.3886267086243915, -8.666301820828483), (2.5695631090326767, 5.6819825372738), (0.8326172577913269, -1.8063646339067345), (-0.297501921308295, 0.3590644895222237), (-1.8726675154550398, -3.0168134751817357), (2.4810167158749934, 4.253304365132948), (-4.61251531100266, -8.80259568086036), (-3.177311830667721, -1.9549725187436557), (3.410044913981565, 9.067795107289932), (-4.880721546203192, -9.92181205965382), (-0.7219444488413167, 0.24258558271789532), (4.386611878520787, 5.151656553794299), (3.355773375583059, 5.834352782532042), (-1.8956237745339601, -1.5439442217388146), (-1.7755063095023313, 1.0286616354299571), (-0.056316975704935324, 0.009507955919120015), (-4.458908058025884, -9.450028168615603), (-3.4499566041025123, -10.34195728348076), (2.4411536666324, 8.49238620575766), (-1.5002142136434218, -7.8158202646539605), (-3.5113842918268015, -5.863119858340559), (-1.8194103751916657, -2.155965992147136), (-2.976387242004029, -5.164163209288647), (-3.8324883945712362, -4.068276035729881), (2.9391035194637025, 2.5197143924020535), (1.4183215520777503, -1.177543074190499), (3.2019265759747775, 11.04716521889908), (3.0048493728767607, 4.583620070032797), (-3.2905348634874985, -8.606061433258795), (-4.897153640526138, -6.884715448767297), (0.4382087218364559, -0.2424023910416877), (-0.9080642535612862, 2.8675901761824854), (3.3961575796656334, 4.362545255439596), (1.833256199951279, 2.697736462864871), (4.109514428743484, 7.576583740501922), (2.5840687259499173, 7.532131457177716), (-1.6970557804628736, -4.395738563570288), (-0.18657271595716196, -3.38988823907527), (-2.0522907923918945, 0.8674178833372892), (-1.1252686520415534, -7.023495988385254), (-3.724834664363701, -4.898771380004719), (2.12829997104307, 3.4686236281245613), (3.391350883534834, 3.197601827571752), (2.5160180314716527, 0.30270589482698185), (-3.942971648049536, -6.054823137935836), (-1.8295292857951728, -4.595399914074822), (-3.390824691611259, -2.1870344762947944), (-1.1101283760377134, 2.1001248673059187), (0.4588622601508563, -1.14954594954092), (-0.08691883997787109, -1.145883525320377), (-0.5883575035932331, 0.7806782449412601), (3.200269831024791, 8.196891350238833), (3.498031254607751, 2.787051511368624), (0.7763098679667193, -0.24508712389312048), (1.687198185907027, 6.523462859881519), (-3.8715937307880655, -8.925520080826766), (1.5429473472752973, 5.372245136122499), (0.5449495056008589, 0.7766960254400166), (3.7894215749561972, 10.063113148911942), (-0.6358189801007841, 3.458422521561271)]
+</pre>
+</section>
+</section>
+<section>
+<section id="slide-2">
+<h2 id="2"><span class="section-number-2">2.</span> Linear Regression</h2>
+<div class="outline-text-2" id="text-2">
+</div>
+</section>
+<section id="slide-2-1">
+<h3 id="2-1"><span class="section-number-3">2.1.</span> Graphing Linear Models</h3>
+<div class="org-src-container">
+
+<pre class="src src-jupyter-python"><span style="color: #dcaeea;">m</span> = 2
+<span style="color: #dcaeea;">starting_y</span> = -10
+
+<span style="color: #dcaeea;">x_line</span> = np.linspace(<span style="color: #c678dd;">min</span>(x_i), <span style="color: #c678dd;">max</span>(x_i), 100)
+<span style="color: #dcaeea;">y_line</span> = m * x_line + (-m * <span style="color: #c678dd;">min</span>(x_i) + starting_y)
+
+plt.scatter(x_i, y_i)
+plt.plot(x_line, y_line)
+
+</pre>
+</div>
+
+
+<div id="org3f234e9" class="figure">
+<p><img src="./.ob-jupyter/8c78badda54f51eda656a9cb74db943b0d478a22.png" alt="8c78badda54f51eda656a9cb74db943b0d478a22.png" />
+</p>
+</div>
+</section>
+<section id="slide-2-2">
+<h3 id="2-2"><span class="section-number-3">2.2.</span> Residuals of the Linear Model</h3>
+<div class="org-src-container">
+
+<pre class="src src-jupyter-python"><span style="color: #dcaeea;">residuals_LRM</span> = []
+
+<span style="color: #51afef;">for</span> i <span style="color: #51afef;">in</span> <span style="color: #c678dd;">range</span>(<span style="color: #c678dd;">len</span>(coordinate_list)):
+    <span style="color: #dcaeea;">current_coord</span> = coordinate_list[i]
+    <span style="color: #dcaeea;">residual</span> = (m * current_coord[0] + (-m * <span style="color: #c678dd;">min</span>(x_i) + starting_y)) - current_coord[1]
+    residuals_LRM.append((current_coord, residual))
+
+<span style="color: #c678dd;">print</span>(residuals_LRM)
+
+
+
+</pre>
+</div>
+
+<pre class="example">
+[((-0.6868905574122337, 2.158056675303772), -3.5723690981625484), ((2.984902333817711, 2.4261850742692053), 3.5030882853319083), ((0.019201054435015408, -3.34408369920126), 3.341954500036982), ((3.130277212029826, 8.464037886115001), -2.2440147700896578), ((-1.2504445529761643, -5.757153494170853), 3.215733080184216), ((3.606481527163071, 6.315885029521058), 0.856546716770775), ((-1.60192591463126, 0.7094691737919732), -3.953852311088802), ((-3.136959304047778, -1.7421470556692213), -4.572302860460644), ((3.400191378818402, 11.75665044878453), -4.996798999182035), ((-1.859578297003479, -5.437070535563354), 1.677382633522087), ((4.411336749950461, 7.9295829185077), 0.8525592733589136), ((-2.271982215494516, -2.5741147153547512), -2.0103810236685895), ((-4.979734345982846, -6.405491430878373), -3.5945085691216274), ((-1.7524237154178501, -1.5907122678148644), -1.9546664710551447), ((-2.3534371830957657, -4.357991660062424), -0.3894140141634157), ((1.5416612522481765, 5.3929006003379785), -2.3501094038759343), ((-0.03777731223429637, -1.5585368538265802), 1.4424509213236787), ((-1.8822076293106829, -3.005579140517253), -0.7993674261384216), ((4.662396955286258, 9.479027528451144), -0.1947649259129367), ((-4.735302968583374, -10.933757696331265), 1.4226204511302072), ((-4.014924238073808, -8.966232717706896), 0.8958529335249708), ((-4.442687420294485, -13.003739112312012), 4.077832963688733), ((-4.377191359928949, -4.762435740509659), -4.032478287382547), ((3.3937324831458486, 4.432544887342648), 2.31438877091474), ((-4.529802036571773, -12.664758736531367), 3.564623355353511), ((3.0306500542339947, 5.7415986098539875), 0.27917019057969306), ((4.454147687395771, 5.891590420473231), 2.9761736462840025), ((-3.0303530626055197, -6.710327558461554), 0.6090901252162055), ((4.026149052084435, 11.60428890044909), -3.5925221043145292), ((0.633005279214526, 4.68025448508085), -3.4547752346861067), ((3.488122344400077, 8.679904846666467), -1.744191465900622), ((-1.2346031606838381, 2.1764981241315935), -4.686235753533579), ((-2.951656313641995, -4.726858951647506), -1.2169849836707929), ((3.440001677763256, 2.5397208222293477), 4.299751225262855), ((-4.210400994164983, -3.5004199408304046), -4.9609133555338705), ((3.3275323838379176, 9.473631008328432), -2.859097548686906), ((0.2556126899549147, 4.772923983893541), -4.302229912018021), ((-4.693507880006829, -12.094738546626463), 2.6671914785784967), ((0.453418957611623, -2.1504353122724336), 3.0167419194613707), ((2.5469827983115128, 1.669708754903798), 3.3837255336849186), ((-2.3886267086243915, -8.666301820828483), 3.8485170955453913), ((2.5695631090326767, 5.6819825372738), -0.5833876272427556), ((0.8326172577913269, -1.8063646339067345), 3.4310678414550795), ((-0.297501921308295, 0.3590644895222237), -0.9945996401731225), ((-1.8726675154550398, -3.0168134751817357), -0.7690528637626528), ((2.4810167158749934, 4.253304365132948), 0.6681977585827301), ((-4.61251531100266, -8.80259568086036), -0.462966249179269), ((-3.177311830667721, -1.9549725187436557), -4.440182450626095), ((3.410044913981565, 9.067795107289932), -2.2882365873611104), ((-4.880721546203192, -9.92181205965382), 0.11983765921312717), ((-0.7219444488413167, 0.24258558271789532), -1.7270057884348375), ((4.386611878520787, 5.151656553794299), 3.581035895212966), ((3.355773375583059, 5.834352782532042), 0.8366626605997673), ((-1.8956237745339601, -1.5439442217388146), -2.2878346353634145), ((-1.7755063095023313, 1.0286616354299571), -4.620205562468929), ((-0.056316975704935324, 0.009507955919120015), -0.16267321536329948), ((-4.458908058025884, -9.450028168615603), 0.4916807445295266), ((-3.4499566041025123, -10.34195728348076), 3.4015127672414263), ((2.4411536666324, 8.49238620575766), -3.6506101805271687), ((-1.5002142136434218, -7.8158202646539605), 4.774860529332808), ((-3.5113842918268015, -5.863119858340559), -1.200180033347353), ((-1.8194103751916657, -2.155965992147136), -1.523386066270504), ((-2.976387242004029, -5.164163209288647), -0.82914258275372), ((-3.8324883945712362, -4.068276035729881), -3.6372320614469), ((2.9391035194637025, 2.5197143924020535), 3.3179613384910427), ((1.4183215520777503, -1.177543074190499), 3.973654870311691), ((3.2019265759747775, 11.04716521889908), -4.683843374983834), ((3.0048493728767607, 4.583620070032797), 1.3855473676864154), ((-3.2905348634874985, -8.606061433258795), 1.9844603982494888), ((-4.897153640526138, -6.884715448767297), -2.9501231403192882), ((0.4382087218364559, -0.2424023910416877), 1.0782885266802906), ((-0.9080642535612862, 2.8675901761824854), -4.7242499913393665), ((3.3961575796656334, 4.362545255439596), 2.3892385958573623), ((1.833256199951279, 2.697736462864871), 0.9282446290033786), ((4.109514428743484, 7.576583740501922), 0.6019138089507372), ((2.5840687259499173, 7.532131457177716), -2.40452531331219), ((-1.6970557804628736, -4.395738563570288), 0.9610956946102318), ((-0.18657271595716196, -3.38988823907527), 2.976211499126637), ((-2.0522907923918945, 0.8674178833372892), -5.012530776155387), ((-1.1252686520415534, -7.023495988385254), 4.732427376267839), ((-3.724834664363701, -4.898771380004719), -2.5914292567569914), ((2.12829997104307, 3.4686236281245613), 0.7474450059272701), ((3.391350883534834, 3.197601827571752), 3.5445686314636067), ((2.5160180314716527, 0.30270589482698185), 4.688798860082015), ((-3.942971648049536, -6.054823137935836), -1.8716514661975445), ((-1.8295292857951728, -4.595399914074822), 0.8958100344501672), ((-3.390824691611259, -2.1870344762947944), -4.635146214962033), ((-1.1101283760377134, 2.1001248673059187), -4.360912927415654), ((0.4588622601508563, -1.14954594954092), 2.0267391618083237), ((-0.08691883997787109, -1.145883525320377), 0.931514537330326), ((-0.5883575035932331, 0.7806782449412601), -1.9979245601620352), ((3.200269831024791, 8.196891350238833), -1.8368829962235598), ((3.498031254607751, 2.787051511368624), 4.168479689812569), ((0.7763098679667193, -0.24508712389312048), 1.7571755517922503), ((1.687198185907027, 6.523462859881519), -3.189597796101774), ((-3.8715937307880655, -8.925520080826766), 1.1418013112163266), ((1.5429473472752973, 5.372245136122499), -2.3268817496062137), ((0.5449495056008589, 0.7766960254400166), 0.2726716777273923), ((3.7894215749561972, 10.063113148911942), -2.524801307033856), ((-0.6358189801007841, 3.458422521561271), -4.770591789797148)]
+</pre>
+</section>
+<section id="slide-2-3">
+<h3 id="2-3"><span class="section-number-3">2.3.</span> Table of Residuals</h3>
+<div class="org-src-container">
+
+<pre class="src src-jupyter-python"><span style="color: #dcaeea;">data</span> = {<span style="color: #98be65;">'coordinate'</span>: [],
+        <span style="color: #98be65;">'residual'</span>: []}
+
+<span style="color: #51afef;">for</span> i <span style="color: #51afef;">in</span> residuals_LRM:
+    data[<span style="color: #98be65;">'coordinate'</span>].append(i[0])
+    data[<span style="color: #98be65;">'residual'</span>].append(i[1])
+
+<span style="color: #dcaeea;">residual_df</span> = pd.DataFrame(data)
+
+<span style="color: #c678dd;">print</span>(residual_df)
+
+</pre>
+</div>
+
+<pre class="example" id="org6821954">
+                                   coordinate  residual
+0    (-0.6868905574122337, 2.158056675303772) -3.572369
+1     (2.984902333817711, 2.4261850742692053)  3.503088
+2   (0.019201054435015408, -3.34408369920126)  3.341955
+3      (3.130277212029826, 8.464037886115001) -2.244015
+4   (-1.2504445529761643, -5.757153494170853)  3.215733
+..                                        ...       ...
+95  (-3.8715937307880655, -8.925520080826766)  1.141801
+96    (1.5429473472752973, 5.372245136122499) -2.326882
+97   (0.5449495056008589, 0.7766960254400166)  0.272672
+98   (3.7894215749561972, 10.063113148911942) -2.524801
+99   (-0.6358189801007841, 3.458422521561271) -4.770592
+
+[100 rows x 2 columns]
+</pre>
+<ol class="org-ol">
+<li><a id="2-3-0-1"></a>Sorted Table of Residuals (unneeded, but good to know how to do)<br />
+<div class="org-src-container">
+
+<pre class="src src-jupyter-python"><span style="color: #dcaeea;">residual_df_sorted</span> = residual_df.sort_values(by=<span style="color: #98be65;">'residual'</span>, ascending=<span style="color: #a9a1e1;">True</span>)
+
+<span style="color: #c678dd;">print</span>(residual_df_sorted)
+</pre>
+</div>
+
+<pre class="example" id="orgb88ccf9">
+                                    coordinate  residual
+78   (-2.0522907923918945, 0.8674178833372892) -5.012531
+8       (3.400191378818402, 11.75665044878453) -4.996799
+34   (-4.210400994164983, -3.5004199408304046) -4.960913
+99    (-0.6358189801007841, 3.458422521561271) -4.770592
+71   (-0.9080642535612862, 2.8675901761824854) -4.724250
+..                                         ...       ...
+92      (3.498031254607751, 2.787051511368624)  4.168480
+33     (3.440001677763256, 2.5397208222293477)  4.299751
+83   (2.5160180314716527, 0.30270589482698185)  4.688799
+79   (-1.1252686520415534, -7.023495988385254)  4.732427
+59  (-1.5002142136434218, -7.8158202646539605)  4.774861
+
+[100 rows x 2 columns]
+</pre>
+</li>
+</ol>
+</section>
+<section id="slide-2-4">
+<h3 id="2-4"><span class="section-number-3">2.4.</span> Residual Bargraph</h3>
+<div class="org-src-container">
+
+<pre class="src src-jupyter-python">residual_df_sorted[<span style="color: #98be65;">'residual'</span>].hist(bins= 100) <span style="color: #5B6268;">#</span><span style="color: #5B6268;">(not standard, try changing bin and you will know why
+</span>plt.title(<span style="color: #98be65;">'Histogram of Model Residuals'</span>)
+plt.xlabel(<span style="color: #98be65;">"residual"</span>)
+plt.ylabel(<span style="color: #98be65;">"frequency"</span>)
+plt.show()
+</pre>
+</div>
+
+
+<div id="orgd50feec" class="figure">
+<p><img src="./.ob-jupyter/de88ff6a40b1e3883905f09a0e0ebf03299b3ae3.png" alt="de88ff6a40b1e3883905f09a0e0ebf03299b3ae3.png" />
+</p>
+</div>
+
+<p>
+Graphing residuals on Bargraphs are pretty inconsistent, as the bar graph&rsquo;s y-value (frequency) changes <b>extremely</b> drastically, depending on how large the bins are for the plot.
+</p>
+
+<p>
+Think of a dataset: [1,2,3,4,5,6,7] where these numbers represent the frequency of each 7 categories from right to left. If the bin is 1, then we get [28], which would equate to just a single large bar. <i>tbh this isn&rsquo;t a good example to visualize, so changing the bar on the src above is better</i>. Anyways, this abstraction causes problems to visualization
+</p>
+</section>
+<section id="slide-2-5">
+<h3 id="2-5"><span class="section-number-3">2.5.</span> Residual KDE (Kernel Density Estimation) Plot</h3>
+<div class="org-src-container">
+
+<pre class="src src-jupyter-python"><span style="color: #dcaeea;">plot_width</span> = 100
+
+<span style="color: #dcaeea;">fig</span>, <span style="color: #dcaeea;">ax</span> = plt.subplots()
+
+sns.kdeplot(residual_df[<span style="color: #98be65;">'residual'</span>], cut=10)
+
+
+plt.title(<span style="color: #98be65;">'PDF of Residuals'</span>)
+plt.xlabel(<span style="color: #98be65;">"residual"</span>)
+plt.ylabel(<span style="color: #98be65;">"frequency"</span>)
+ax.set_xlim(-plot_width, plot_width)
+plt.show()
+
+</pre>
+</div>
+
+
+<div id="org4cd2a5c" class="figure">
+<p><img src="./.ob-jupyter/36792cb994346f23af241b29b7eaa370545c9868.png" alt="36792cb994346f23af241b29b7eaa370545c9868.png" />
+</p>
+</div>
+
+<p>
+Why does this graph create a normal distribution when we set the slope and starting point both to 0 (and make the rand data creation have 0 as center)? This is because, the |distances from the line to each point are generally equidistant when all are combined|.
+</p>
+</section>
+</section>
+</div>
+</div>
+<script src="file:///Users/rn/.emacs.d/.local/straight/build-30.2/revealjs/dist/reveal.js"></script>
+<script src="file:///Users/rn/.emacs.d/.local/straight/build-30.2/revealjs/plugin/markdown/markdown.js"></script>
+<script src="file:///Users/rn/.emacs.d/.local/straight/build-30.2/revealjs/plugin/notes/notes.js"></script>
+<script src="file:///Users/rn/.emacs.d/.local/straight/build-30.2/revealjs/plugin/search/search.js"></script>
+<script src="file:///Users/rn/.emacs.d/.local/straight/build-30.2/revealjs/plugin/zoom/zoom.js"></script>
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+
+controls: true,
+progress: true,
+history: false,
+center: true,
+slideNumber: 'c',
+rollingLinks: false,
+keyboard: true,
+mouseWheel: false,
+fragmentInURL: false,
+hashOneBasedIndex: false,
+pdfSeparateFragments: true,
+overview: true,
+
+transition: 'convex',
+transitionSpeed: 'default',
+
+// Plugins with reveal.js 4.x
+plugins: [ RevealMarkdown, RevealNotes, RevealSearch, RevealZoom ],
+
+// Optional libraries used to extend reveal.js
+dependencies: [
+]
+
+});
+</script>
+</body>
+</html>
